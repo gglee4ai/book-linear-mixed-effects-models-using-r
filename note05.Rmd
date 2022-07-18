@@ -5,22 +5,19 @@ output: html_notebook
 
 # 5 Fitting Linear Models with Homogeneous Variance: The lm() and gls() Functions
 
-
 ## 5.2 Specifying the Mean Structure Using a Model Formula
 
 ```{r}
 y ~ x1
 ```
 
-
 ```{r}
 formula(y ~ x1)
 ```
 
 ```{r}
-formA <- y ~ f1*f2
+formA <- y ~ f1 * f2
 ```
-
 
 ```{r}
 termsA <- terms(formA)
@@ -63,12 +60,10 @@ form1 <- formula(
 )
 ```
 
-
 ```{r}
 data(armd.wide, package = "nlmeU")
 str(armd.wide)
 ```
-
 
 ```{r}
 armd.mf1 <-
@@ -81,7 +76,6 @@ armd.mf1 <-
   )
 armd.mf1
 ```
-
 
 ```{r}
 class(armd.mf1)
@@ -116,17 +110,14 @@ attr(terms.mf1, "dataClasses")
 attr(terms.mf1, "predvars")
 ```
 
-
 ```{r}
 labels(terms.mf1)
 ```
-
 
 ```{r}
 Xmtx <- model.matrix(form1, armd.mf1)
 head(Xmtx)
 ```
-
 
 ```{r}
 dim(Xmtx)
@@ -149,8 +140,6 @@ names(attributes(Xmtx))
 attr(Xmtx, "assign")
 ```
 
-
-
 ```{r}
 attr(Xmtx, "contrasts")
 ```
@@ -163,11 +152,9 @@ contr.treatment((3))
 contr.treatment(3, base = 3)
 ```
 
-
 ```{r}
 contr.sum(3)
 ```
-
 
 ```{r}
 contr.helmert(3)
@@ -177,8 +164,6 @@ contr.helmert(3)
 contr.poly(3, scores = c(1, 5, 7))
 ```
 
-
-
 ```{r}
 options()$contrasts
 ```
@@ -187,7 +172,6 @@ options()$contrasts
 lesion.f <- factor(armd.wide$lesion)
 str(lesion.f)
 ```
-
 
 ```{r}
 names(attributes(lesion.f))
@@ -200,7 +184,6 @@ levels(lesion.f)
 ```{r}
 contrasts(lesion.f)
 ```
-
 
 ```{r}
 lesion2.f <- C(lesion.f, contr.sum(4))
@@ -215,10 +198,8 @@ names(attributes(lesion2.f))
 contrasts(lesion2.f)
 ```
 
-
 ```{r}
 lesion2a.f <- factor(lesion.f)
 contrasts(lesion2a.f) <- contr.sum(4)
 contrasts(lesion2a.f)
 ```
-
