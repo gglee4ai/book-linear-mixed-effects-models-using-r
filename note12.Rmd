@@ -1,0 +1,119 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+# ARMD Trial: Modeling Correlated Errors for Visual Acuity
+
+```{r}
+library(nlme)
+data(armd, package = "nlmeU")
+```
+
+
+## 12.2 The Model with Heteroscedastic, Independent Residual Errors Revisited
+
+
+```{r}
+lm1.form <-formula(visual ~ -1 + visual0 + time.f + treat.f:time.f )
+fm9.2 <-
+  gls(lm1.form,
+    weights = varPower(form = ~time),
+    data = armd
+  )
+```
+
+```{r}
+Vg1 <- Variogram(fm9.2, form = ~ time | subject)
+Vg1
+```
+```{r}
+plot(Vg1, smooth = FALSE, xlab = "Time difference")
+```
+
+```{r}
+Vg2 <- Variogram(fm9.2, form = ~tp|subject)
+Vg2
+```
+
+```{r}
+plot(Vg2, smooth = FALSE, xlab = "Time Lag")
+```
+
+```{r}
+fm12.1 <-
+  gls(lm1.form, weights = varPower(form = ~ time),
+      correlation = corCompSymm(form = ~1 | subject),
+      data = armd)
+fm12.1
+```
+
+
+```{r}
+intervals(fm12.1, which = "var-cov")
+```
+
+```{r}
+fm12.1vcov <- getVarCov(fm12.1, individual = "2")
+fm12.1vcov
+```
+
+```{r}
+nms <- c("4wks", "12wks", "24wks", "52wks")
+dnms <- list(nms, nms)
+dimnames(fm12.1vcov) <- dnms
+print(fm12.1vcov)
+```
+
+
+```{r}
+print(cov2cor(fm12.1vcov), corr = TRUE, stdevs = FALSE)
+```
+
+
+```{r}
+anova(fm9.2, fm12.1)
+```
+
+```{r}
+fm12.2 <- 
+  update(fm9.2,
+         correlation = corAR1(form = ~tp | subject),
+         data = armd)
+fm12.2
+```
+
+```{r}
+intervals(fm12.2, which = "var-cov")
+```
+
+
+```{r}
+fm12.2vcov <- getVarCov(fm12.2, individual = "2")
+dimnames(fm12.2vcov) <- dnms
+fm12.2vcov
+```
+
+```{r}
+fm12.2cor <- cov2cor(fm12.2vcov)
+print(fm12.2cor, digits = 2, corr = TRUE, stdevs = FALSE)
+```
+
+```{r}
+anova(fm12.1, fm12.2)
+```
+
+## 12.5 General Correlation Matrix for Residual Errors
+
+
+
+
+
+
+
+
+
+
+
+
