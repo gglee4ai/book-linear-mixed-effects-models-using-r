@@ -1,0 +1,164 @@
+---
+title: "note17"
+output: html_notebook
+---
+
+# 17 PRT Trial: Modeling Muscle Fiber Specific-Force
+
+## 17.2 A Model with Occasion-Specific Random Intercepts for Type-1 Fibers
+
+```{r}
+library(nlme)
+library(lattice)
+data(prt, package = "nlmeU")
+prt
+```
+
+```{r}
+lme.spec.form1 <-
+  formula(spec.fo ~ (prt.f + occ.f)^2 + sex.f + age.f + sex.f:age.f + bmi)
+prt1 <- subset(prt, fiber.f == "Type 1", select = -fiber.f)
+prt1
+```
+
+```{r, paged.print=FALSE}
+fm17.1 <- lme(lme.spec.form1, random = ~ occ.f - 1 | id, data = prt1)
+summary(fm17.1)
+```
+
+```{r}
+getGroupsFormula(fm17.1)
+```
+
+```{r}
+str(grpF <- getGroups(fm17.1))
+```
+
+```{r}
+nF1 <- xtabs(~grpF)
+range(nF1)
+```
+
+```{r}
+nF1[which.min(nF1)]
+```
+
+```{r}
+str(fm17.1$dims)
+```
+
+```{r}
+fixed1 <- summary(fm17.1)$tTable
+nms <- rownames(fixed1)
+nms[7:8] <- c("fLow:fPos", "fMale:FOld")
+rownames(fixed1) <- nms
+printCoefmat(fixed1, has.Pvalue = TRUE, P.values = TRUE)
+```
+
+```{r}
+getVarCov(fm17.1)
+```
+
+```{r}
+VarCorr(fm17.1)
+```
+
+```{r}
+Ri <- getVarCov(fm17.1, c("5", "275"), type = "conditional")
+Ri$"275"
+```
+
+```{r}
+Ri.5 <- Ri$"5"
+dim(Ri.5)
+```
+
+```{r}
+Ri.5d <- diag(Ri.5)[1:6]
+Ri.5d
+```
+
+```{r}
+sgma <- summary(fm17.1)$sigma
+sgma^2
+```
+
+```{r}
+dt5 <- subset(prt1, select = c(id, occ.f), id == "5")
+auxF1 <- function(elv) {
+  idx <- 1:min(length(elv), 2)
+  elv[idx]
+}
+i.u5 <- unlist(tapply(rownames(dt5), dt5$occ.f, FUN = auxF1))
+i.u5
+```
+
+```{r}
+dt.u5 <- dt5[i.u5, ]
+nms.u5 <- paste(i.u5, dt.u5$occ.f, sep = ".")
+nms.u5
+```
+
+```{r}
+Vi <- getVarCov(fm17.1, "5", type = "marginal")
+Vi.5 <- Vi$"5"
+Vi.u5 <- Vi.5[i.u5, i.u5]
+rownames(Vi.u5) <- nms.u5
+Vi.u5
+```
+
+```{r}
+cov2cor(Vi.u5)
+```
+
+```{r}
+rnf <- ranef(fm17.1)
+vrnf <- var(rnf)
+vrnf
+```
+
+```{r}
+plot(rnf)
+```
+
+```{r, fig.width=3, fig.height=3}
+library(ellipse)
+myPanel <- function(x, y, ...) {
+  panel.grid(h = -1, v = -1)
+  panel.xyplot(x, y)
+  ex1 <- ellipse(getVarCov(fm17.1))
+  panel.xyplot(ex1[, 1], ex1[, 2], type = "l", lty = 1)
+  ex2 <- ellipse(vrnf)
+  panel.xyplot(ex2[, 1], ex2[, 2], type = "l", lty = 2)
+}
+xyplot(rnf[, 2] ~ rnf[, 1],
+  xlab = "Pre-intervention",
+  ylab = "Post-intervention",
+  xlim = c(-40, 40), ylim = c(-40, 40),
+  panel = myPanel
+)
+```
+
+```{r}
+prt1r <- within(prt1, {
+  residP1 <- residuals(fm17.1, type = "p")
+  fitted1 <- fitted(fm17.1)
+})
+range(prt1r$residP1)
+```
+
+```{r}
+xyplot(residP1 ~ fitted1 | occ.f,
+  data = prt1r,
+  ylim = c(-6, 6),
+  type = c("p", "smooth"),
+  grid = TRUE
+)
+```
+
+```{r}
+qqnorm(prt1r$residP1)
+qqline(prt1r$residP1)
+```
+
+## 17.3 A Mean-Variance Model with Occasion-Specific Random Intercepts for Type-1 Fibers
