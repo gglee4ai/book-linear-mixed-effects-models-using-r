@@ -48,15 +48,15 @@ xtabs(~miss.pat, armd.wide)
 ```
 
 ```{r}
-attach(armd0)
-flst <- list(time.f, treat.f)
-tN <- tapply(visual, flst, FUN = function(x) length(x[!is.na(x)]))
+#attach(armd0)
+flst <- list(armd0$time.f, armd0$treat.f)
+tN <- tapply(armd0$visual, flst, FUN = function(x) length(x[!is.na(x)]))
 tN
 ```
 
 ```{r}
-tMn <- tapply(visual, flst, FUN = mean)
-tMd <- tapply(visual, flst, FUN = median)
+tMn <- tapply(armd0$visual, flst, FUN = mean)
+tMd <- tapply(armd0$visual, flst, FUN = median)
 res <- cbind(tN, tMn, tMd)
 res
 ```

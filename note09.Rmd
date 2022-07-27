@@ -147,12 +147,12 @@ plot(fm9.2,
 ```
 
 ```{r, fig.asp = 1}
-library(tidyverse)
+#library(tidyverse)
 res <- cbind(resid = residuals(fm9.2, type = "pearson"), armd)
 res %>%
-  filter(miss.pat == "----") %>%
-  select(subject, resid, time.f) %>%
-  pivot_wider(names_from = time.f, values_from = resid) %>%
-  select(-subject) %>%
+  dplyr::filter(miss.pat == "----") %>%
+  dplyr::select(subject, resid, time.f) %>%
+  tidyr::pivot_wider(names_from = time.f, values_from = resid) %>%
+  dplyr::select(-subject) %>%
   splom()
 ```

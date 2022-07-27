@@ -5,7 +5,7 @@ output: html_notebook
 
 
 ```{r}
-pckgs <- c("lme4.0", "nlmeU", "plyr", "reshape", "RLRsim", "WWGbook", "ellipse")
-install.packages(pckgs)
+# pckgs <- c("lme4.0", "nlmeU", "plyr", "reshape", "RLRsim", "WWGbook", "ellipse")
+# install.packages(pckgs)
 ```
 
