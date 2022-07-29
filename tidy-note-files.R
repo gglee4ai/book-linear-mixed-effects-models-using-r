@@ -9,4 +9,4 @@ for (f in files) try(rmarkdown::render(f))
 notes <- list.files(pattern = "[.]nb.html$")
 renamed <- stringr::str_replace(notes, pattern = "[.]nb.html$", ".html")
 cat(str_c(notes, renamed, sep = " -> "), sep = "\n") # for check
-#file.rename(notes, renamed)
+# file.rename(notes, renamed)
