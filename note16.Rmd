@@ -357,7 +357,7 @@ exactRLRT(m = mAux, m0 = fm16.1, mA = fm16.7)
 
 ```{r}
 vis.lme2.sim <-
-  simulate(fm16.1, m2 = fm16.7, nsim = 1000)
+  simulate(fm16.1, m2 = fm16.7, nsim = 100) # nsim = 10000 takes ~5 min
 plot(vis.lme2.sim, df = c(1, 2), abline = c(0, 1, lty = 2))
 ```
 
